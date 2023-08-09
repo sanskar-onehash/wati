@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include wati *.css
+recursive-include wati *.csv
+recursive-include wati *.html
+recursive-include wati *.ico
+recursive-include wati *.js
+recursive-include wati *.json
+recursive-include wati *.md
+recursive-include wati *.png
+recursive-include wati *.py
+recursive-include wati *.svg
+recursive-include wati *.txt
+recursive-exclude wati *.pyc
