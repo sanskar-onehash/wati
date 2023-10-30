@@ -288,8 +288,11 @@ function verify(d, context, data, header_html, data_dict) {
 			}
 	}
 }
+	// $(d.get_field('content').wrapper).html(
+	// 	`<div class="card mb-3 h-100"><div class="card-body">` + frappe.render(header_html, context) + frappe.render(data.message_body, context) + `<br><br></div></div>`
+	// );
 	$(d.get_field('content').wrapper).html(
-		`<div class="card mb-3 h-100"><div class="card-body">` + frappe.render(header_html, context) + frappe.render(data.message_body, context) + `<br><br></div></div>`
+		`<div class="card mb-3 h-100"><div class="card-body">` + header_html + data.message_body + `<br><br></div></div>`
 	);
 	d.get_primary_btn()[0].disabled = false
 }
