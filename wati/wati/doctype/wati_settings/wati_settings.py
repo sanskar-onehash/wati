@@ -12,6 +12,7 @@ from six import string_types
 class WatiSettings(Document):
 	pass
 
+@frappe.whitelist()
 def send_whatsapp_message(receiver_list, message):
 	
 	if not frappe.db.get_single_value("Wati Settings", "enabled"):
@@ -113,7 +114,7 @@ def send_template_message(doc, whatsapp_numbers, broadcast_name, template_name, 
 					"status": "Sent",
 					"message": frappe.render_template(header_html + "\n\n" + temp.message_body, template_parameters),
 					"response_json": response.text
-				}).insert()
+				}).insert(ignore_permissions=True)
 				frappe.db.commit()
 				result = True
 				
@@ -125,7 +126,7 @@ def send_template_message(doc, whatsapp_numbers, broadcast_name, template_name, 
 					"status": "Failed",
 					"message": frappe.render_template(header_html + "\n\n" + temp.message_body, template_parameters),
 					"response_json": response.text
-				}).insert()
+				}).insert(ignore_permissions=True)
 				frappe.db.commit()
 				frappe.log_error(response.text, "WhatsApp Message Failed")
 				result = False
@@ -138,6 +139,7 @@ def send_template_message(doc, whatsapp_numbers, broadcast_name, template_name, 
 	except:
 		frappe.log_error(frappe.get_traceback(), "WhatsApp Message Errored")
 
+@frappe.whitelist()
 def get_whatsapp_messages():
 	pass
 
@@ -209,7 +211,7 @@ def get_message_templates():
 						if body_args_list:
 							for arg in body_args_list:
 								wt_doc.append("whatsapp_map", {"field_name": arg, "location": "body"})
-						wt_doc.insert()
+						wt_doc.insert(ignore_permissions=True)
 
 				frappe.db.commit()
 				return [True, "WhatsApp Templates Fetched Successfully"]
@@ -273,6 +275,7 @@ def get_contacts():
 		frappe.log_error(frappe.get_traceback(), "WhatsApp Contact Fetch Errored")
 		return [False, "WhatsApp Contacts Failed to Fetch"]
 
+@frappe.whitelist()
 def add_contact(number=None):
 	try:
 		if not frappe.db.get_single_value("Wati Settings", "enabled"):
@@ -336,6 +339,7 @@ def add_contact(number=None):
 		frappe.log_error(frappe.get_traceback(), "WhatsApp Contact Errored")
 		return [False, ""]
 
+@frappe.whitelist()
 def process_url(method):
 	url = frappe.db.get_single_value("Wati Settings", "api_endpoint")
 	if not url:
