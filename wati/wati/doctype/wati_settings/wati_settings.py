@@ -33,6 +33,124 @@ def send_whatsapp_message(receiver_list, message):
 		response = requests.request("POST", url+recipient.replace("+", ""), headers=headers, data=payload, files=files)
 
 
+@frappe.whitelist()
+def send_template_message_followup(doc, whatsapp_numbers, broadcast_name, template_name, template_parameters,service_name):
+	json_string = str(doc)
+	data = json.loads(json_string)
+	docname = data.get('docname')
+	
+	try:
+		if not frappe.db.get_single_value("Wati Settings", "enabled"):
+			return [False, "Wati Service is not Enabled"]
+		
+		url = process_url("sendTemplateMessage/")
+		if not url:
+			return [False, "Wati Service Url is not Configured"]
+
+		token = frappe.db.get_single_value("Wati Settings", "access_token")
+		if "Bearer " not in token:
+			token = "Bearer " + token
+
+		if isinstance(template_parameters, string_types):
+			template_parameters = json.loads(template_parameters)
+		
+		param_payload = []
+		for key, value in template_parameters.items():
+			param_payload.append({"name": key, "value": value})
+
+		param_payload = json.dumps(param_payload)
+		
+		payload = json.dumps({
+		"template_name": template_name,
+		"broadcast_name": broadcast_name,
+		"parameters": param_payload
+		})
+		
+		headers = {
+		'Authorization': token,
+		'Content-Type': 'application/json'
+		}
+		
+		if isinstance(whatsapp_numbers, string_types):
+			whatsapp_numbers = json.loads(whatsapp_numbers)
+		
+		if isinstance(template_parameters, string_types):
+			template_parameters = json.loads(template_parameters)
+
+		whatsapp_numbers = set(whatsapp_numbers)
+		result = False
+		failed_nums = []
+		for number in whatsapp_numbers:
+			if not number:
+				continue
+
+			if not frappe.db.exists("WhatsApp Contact", number.replace("+","")):
+				contact_resp = add_contact(number)
+				if contact_resp[0] != True:
+					if contact_resp[1]:
+						frappe.msgprint(contact_resp[1])
+					continue
+
+			number = number.replace("+","")
+			response = requests.request("POST", url+number, headers=headers, data=payload)
+			 
+			response_text = json.loads(response.text)
+			header_html = ""
+			temp = frappe.get_doc("WhatsApp Template", template_name)
+			if temp.header_type not in ["text", ""]:
+				header_html = temp.header_type[0].upper() + temp.header_type[1:] + " Attachment: " + temp.header_link + " "
+
+			if response_text.get("result") in ["success", "true", True]:
+				if response_text.get("contact").get("contactStatus") == "INVALID":
+					frappe.msgprint("Invalid WhatsApp Contact {}".format(number))
+					failed_nums.append(number)
+
+				# add comments if sent from doctype
+				if isinstance(doc, string_types):
+					doc = json.loads(doc)
+					doc = frappe.get_doc(doc.get("doctype"), doc.get("docname"))
+				doc.add_comment('Comment', text=frappe.render_template(frappe.get_doc("WhatsApp Template", template_name).message_body, template_parameters))
+				# add whatsapp log
+				cus=frappe.db.get_all('Customer',filters={'mobile_no':number})
+				for c in cus:
+					cu=frappe.get_doc('Customer',c.name)
+					cus_name=cu.customer_name
+				frappe.get_doc({
+					"doctype":"WhatsApp Message Log",
+					"to": number,
+					"status": "Sent",
+					"message": frappe.render_template(header_html + "\n\n" + temp.message_body, template_parameters),
+					"response_json": response.text,
+					"service_name": service_name,
+					"signal_tracker":docname,
+					"to_name":cus_name
+				}).insert(ignore_permissions=True)
+				frappe.db.commit()
+				result = True
+				
+			else:
+				# add whatsapp log
+				frappe.get_doc({
+					"doctype":"WhatsApp Message Log",
+					"to": number,
+					"status": "Failed",
+					"message": frappe.render_template(header_html + "\n\n" + temp.message_body, template_parameters),
+					"response_json": response.text,
+					"signal_tracker":docname,
+					"service_name": service_name
+				}).insert(ignore_permissions=True)
+				frappe.db.commit()
+				frappe.log_error(response.text, "WhatsApp Message Failed")
+				result = False
+		if failed_nums:
+			sp = ","
+			failed_nums = sp.join(failed_nums)
+			frappe.msgprint("WhatsApp Message Failed for these numbers: {}".format(failed_nums))
+			return [False, "WhatsApp Message Failed for these numbers: {}".format(failed_nums)]
+		return [True, "WhatsApp Message Sent Successfully"] if result else [False, ""]
+	except:
+		frappe.log_error(frappe.get_traceback(), "WhatsApp Message Errored")
+
 
 @frappe.whitelist()
 def send_template_message(doc, whatsapp_numbers, broadcast_name, template_name, template_parameters):
