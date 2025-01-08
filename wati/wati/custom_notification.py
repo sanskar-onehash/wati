@@ -1,11 +1,8 @@
 import frappe, json
 from frappe import _
-from frappe.utils.safe_exec import get_safe_globals
 from frappe.utils import nowdate, add_to_date
 from frappe.email.doctype.notification.notification import Notification, get_context
-from wati.wati.doctype.wati_settings.wati_settings import send_whatsapp_message, send_template_message
-
-
+from wati.wati.doctype.wati_settings.wati_settings import send_template_message
 
 class WatiNotification(Notification):
     def validate(self):
@@ -34,7 +31,6 @@ class WatiNotification(Notification):
         super(WatiNotification, self).send(doc)
 
     def send_whatsapp_msg(self, doc, context):
-
         whatsapp_template = self.whatsapp_template
 
         if not whatsapp_template:

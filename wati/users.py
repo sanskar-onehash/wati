@@ -1,15 +1,12 @@
-from __future__ import unicode_literals
-from os import environ
-import frappe, json, re
+import io, requests
+import frappe, json
+from bs4 import BeautifulSoup
 from frappe import _
-from frappe.utils import cstr
 from frappe.utils import get_url
 from frappe.utils.pdf import get_pdf
-from PyPDF2 import PdfFileReader, PdfFileWriter
-import io, requests
-from werkzeug.wrappers import Response, Request
-from frappe.website.render import render
-from bs4 import BeautifulSoup
+from frappe.website.serve import get_response
+from pypdf import PdfFileReader, PdfFileWriter
+from __future__ import unicode_literals
 
 @frappe.whitelist()
 def get_attach_link(doc, print_format):
@@ -51,7 +48,7 @@ def forms(path=None, referer=None):
     try:
         form = frappe.get_doc("Web Form", path)
         if not form.is_embeddable:
-            resp = render("/message", http_status_code=200)
+            resp = get_response("/message", http_status_code=200)
             data = resp.data
             soup = BeautifulSoup(data, 'html.parser')
             soup = minify(soup)
@@ -63,7 +60,7 @@ def forms(path=None, referer=None):
             return resp
 
         if form.time_limit and (frappe.utils.get_datetime() > form.to_date or frappe.utils.get_datetime() < form.from_date):
-            resp = render("/message", http_status_code=200)
+            resp = get_response("/message", http_status_code=200)
             data = resp.data
             soup = BeautifulSoup(data, 'html.parser')
             soup = minify(soup)
@@ -75,7 +72,7 @@ def forms(path=None, referer=None):
             return resp
         doc_list_len = len(frappe.get_all("Web Form Log", {"form": path}))
         if form.restrict_number_of_submission not in [0,""] and form.restrict_number_of_submission <= doc_list_len:
-            resp = render("/message", http_status_code=200)
+            resp = get_response("/message", http_status_code=200)
             data = resp.data
             soup = BeautifulSoup(data, 'html.parser')
             soup = minify(soup)
@@ -88,7 +85,7 @@ def forms(path=None, referer=None):
         if frappe.local.request_ip:
             doc_list_len = len(frappe.get_all("Web Form Log", {"form": path, "ip_address": frappe.local.request_ip}))
             if form.restrict_submission_per_ip not in [0, ""] and form.restrict_submission_per_ip <= doc_list_len:
-                resp = render("/message", http_status_code=200)
+                resp = get_response("/message", http_status_code=200)
                 data = resp.data
                 soup = BeautifulSoup(data, 'html.parser')
                 soup = minify(soup)
@@ -126,19 +123,14 @@ def forms(path=None, referer=None):
         frappe.db.commit()
         if not path:
             if frappe.local.request.__dict__.get("environ").get("HTTP_REFERER") != frappe.local.request.__dict__.get("url"):
+                from urllib.parse import urlparse, parse_qs
+                
                 path = frappe.local.request.__dict__.get("environ").get("HTTP_REFERER")
-                try:
-                    # Python 3
-                    from urllib.parse import urlparse, parse_qs
-                except ImportError:
-                    # Python 2
-                    from urlparse import urlparse, parse_qs
-
                 o = urlparse(path)
                 query = parse_qs(o.query)
                 path = query.get("path")[0] if query.get("path") else ""
 
-        resp = render("/"+form.route, http_status_code=200)
+        resp = get_response("/"+form.route, http_status_code=200)
         resp.headers["X-Frame-Options"] = "ALLOWALL"
 
         data = resp.data
@@ -146,7 +138,6 @@ def forms(path=None, referer=None):
         soup = BeautifulSoup(data, 'html.parser')
         soup = minify(soup)
         soup.find('body').attrs["data-path"] += "?path=" + path
-        #soup.find(text=re.compile('is_chat_enabled')).replace_with(soup.find(text=re.compile('is_chat_enabled'))[:-29])
         resp.data = soup.prettify()
         return resp
     except:

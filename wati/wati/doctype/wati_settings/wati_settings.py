@@ -3,14 +3,10 @@
 # For license information, please see license.txt
 
 from __future__ import unicode_literals
-from enum import Flag
 import frappe, json, re
 from frappe.model.document import Document
 import requests
 from six import string_types
-
-class WatiSettings(Document):
-	pass
 
 @frappe.whitelist()
 def send_whatsapp_message(receiver_list, message):
@@ -30,7 +26,7 @@ def send_whatsapp_message(receiver_list, message):
 	'Authorization': 'Bearer ' + frappe.db.get_single_value("Wati Settings", "access_token")
 	}
 	for recipient in receiver_list:
-		response = requests.request("POST", url+recipient.replace("+", ""), headers=headers, data=payload, files=files)
+		requests.request("POST", url+recipient.replace("+", ""), headers=headers, data=payload, files=files)
 
 
 @frappe.whitelist()
@@ -470,3 +466,6 @@ def process_url(method):
 	if url[-1] != "/":
 		url = url + "/"
 	return url + method
+
+class WatiSettings(Document):
+	pass

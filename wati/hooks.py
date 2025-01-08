@@ -7,22 +7,12 @@ app_description = "Wati Integration"
 app_email = "abhishek.c@onehash.ai"
 app_license = "MIT"
 
-doctype_js = {
-	"Notification" : "public/js/Notification.js",
-    "Lead" : "public/js/lead.js",
-	'User': 'public/js/user.js'
-}
-app_include_js = "/assets/js/wati.min.js"
-override_doctype_class = {
-	"Notification": "wati.wati.custom_notification.WatiNotification"
-}
-# app_include_js = ["/assets/wati/js/lead.js","/assets/wati/js/Notification.js"]
 # Includes in <head>
 # ------------------
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/wati/css/wati.css"
-# app_include_js = "/assets/wati/js/wati.js"
+# app_include_js = "/assets/wati/js/Notification.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/wati/css/wati.css"
@@ -39,7 +29,9 @@ override_doctype_class = {
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Notification" : "public/js/Notification.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -119,10 +111,9 @@ override_doctype_class = {
 # DocType Class
 # ---------------
 # Override standard doctype classes
-
-# override_doctype_class = {
-#	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Notification": "wati.wati.custom_notification.WatiNotification"
+}
 
 # Document Events
 # ---------------

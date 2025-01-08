@@ -5,7 +5,6 @@ frappe.ui.form.on('Wati Settings', {
 	refresh: function(frm) {
 		frm.add_custom_button(__('Fetch Templates'), function () {
 			frappe.show_progress('Fetching WhatsApp Templates...', 70, 100, 'Please wait');
-
 			frappe.call({
 				method: "wati.wati.doctype.wati_settings.wati_settings.get_message_templates",
 				callback: function (r) {
@@ -30,7 +29,6 @@ frappe.ui.form.on('Wati Settings', {
 
 		frm.add_custom_button(__('Fetch Contacts'), function () {
 			frappe.show_progress('Fetching WhatsApp Contacts...', 70, 100, 'Please wait');
-
 			frappe.call({
 				method: "wati.wati.doctype.wati_settings.wati_settings.get_contacts",
 				callback: function (r) {
@@ -52,6 +50,5 @@ frappe.ui.form.on('Wati Settings', {
 				}
 			})
 		});
-
 	}
 });
