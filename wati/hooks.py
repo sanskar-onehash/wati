@@ -66,13 +66,13 @@ doctype_js = {
 # ------------
 
 # before_install = "wati.install.before_install"
-# after_install = "wati.install.after_install"
+after_install = "wati.install.after_install"
 
 # Uninstallation
 # ------------
 
 # before_uninstall = "wati.uninstall.before_uninstall"
-# after_uninstall = "wati.uninstall.after_uninstall"
+after_uninstall = "wati.uninstall.after_uninstall"
 
 # Integration Setup
 # ------------------
