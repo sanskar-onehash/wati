@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:template_name",
+ "creation": "2023-08-08 18:03:39.326271",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "template_name",
+  "broadcast_name",
+  "category",
+  "language_code",
+  "header_type",
+  "header_text",
+  "header_link",
+  "message_body",
+  "whatsapp_map"
+ ],
+ "fields": [
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "template_name",
+   "fieldtype": "Data",
+   "label": "Template Name",
+   "unique": 1
+  },
+  {
+   "fieldname": "broadcast_name",
+   "fieldtype": "Data",
+   "label": "Broadcast Name"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Data",
+   "label": "Category"
+  },
+  {
+   "fieldname": "language_code",
+   "fieldtype": "Data",
+   "label": "Language Code"
+  },
+  {
+   "fieldname": "header_type",
+   "fieldtype": "Data",
+   "label": "Header Type"
+  },
+  {
+   "fieldname": "header_text",
+   "fieldtype": "Small Text",
+   "label": "Header Text"
+  },
+  {
+   "fieldname": "header_link",
+   "fieldtype": "Data",
+   "label": "Header Link"
+  },
+  {
+   "fieldname": "message_body",
+   "fieldtype": "Small Text",
+   "label": "Message Body"
+  },
+  {
+   "fieldname": "whatsapp_map",
+   "fieldtype": "Table",
+   "label": "WhatsApp Map",
+   "options": "WhatsApp Template Map"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-08-08 21:59:25.097972",
+ "modified_by": "Administrator",
+ "module": "Wati",
+ "name": "WhatsApp Template",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

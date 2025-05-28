@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-08-08 17:53:43.992466",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "api_endpoint",
+  "access_token",
+  "broadcast_name",
+  "add_contact_parameters",
+  "number_of_templates",
+  "number_of_contacts"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "api_endpoint",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "API Endpoint",
+   "reqd": 1
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Access Token",
+   "reqd": 1
+  },
+  {
+   "fieldname": "broadcast_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Broadcast Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "add_contact_parameters",
+   "fieldtype": "Table",
+   "label": "Add Contact Parameters",
+   "options": "WhatsApp Contact Parameter"
+  },
+  {
+   "fieldname": "number_of_templates",
+   "fieldtype": "Int",
+   "label": "Number of Templates"
+  },
+  {
+   "fieldname": "number_of_contacts",
+   "fieldtype": "Int",
+   "label": "Number of Contacts"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-08-08 17:53:43.992466",
+ "modified_by": "Administrator",
+ "module": "Wati",
+ "name": "Wati Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
