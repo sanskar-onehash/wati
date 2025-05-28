@@ -1,19 +1,23 @@
+const APP_TITLE = "Wati";
+
 frappe.ui.form.on("Notification", {
   refresh: function (frm) {
     frm.events.setup_whatsapp_template(frm);
   },
 
   channel: function (frm) {
-    frm.events.setup_whatsapp_template(frm);
+    if (frm.doc.custom_whatsapp_app === APP_TITLE) {
+      frm.events.setup_whatsapp_template(frm);
+    }
   },
 
-  whatsapp_template: function (frm) {
+  wati_whatsapp_template: function (frm) {
     frm.doc.message = "";
     refresh_field("message");
     frm.events.setup_whatsapp_template(frm);
   },
 
-  map_fields: function (frm) {
+  wati_map_fields: function (frm) {
     let counter = 0;
     let context = {};
     let contact_dict = {};
@@ -71,19 +75,19 @@ frappe.ui.form.on("Notification", {
               frm.doc.message = JSON.stringify(context);
               refresh_field("message");
               for (const [k, value] of Object.entries(context)) {
-                frm.doc.whatsapp_parameter.forEach((f) => {
+                frm.doc.wati_whatsapp_parameter.forEach((f) => {
                   if (f.parameter == k) {
                     f.value = value;
                   }
                 });
               }
-              frm.refresh_fields("whatsapp_parameter");
+              frm.refresh_fields("wati_whatsapp_parameter");
               frm.dirty();
               d.hide();
             },
             () => {
               // action to perform if No is selected
-            }
+            },
           );
         }
       },
@@ -94,15 +98,15 @@ frappe.ui.form.on("Notification", {
       title: "Map Fields",
     });
 
-    if (frm.doc.whatsapp_template) {
+    if (frm.doc.wati_whatsapp_template) {
       frappe.db
-        .get_doc("WhatsApp Template", frm.doc.whatsapp_template)
+        .get_doc("WhatsApp Template", frm.doc.wati_whatsapp_template)
         .then((data) => {
           counter += 1;
           if (counter == 1) {
             cur_frm.broadcast_name = data.broadcast_name;
             const elements = document.getElementsByClassName(
-              "modal-body ui-front"
+              "modal-body ui-front",
             );
             Array.from(elements).forEach((element) => {
               element.addEventListener("click", function () {
@@ -111,7 +115,7 @@ frappe.ui.form.on("Notification", {
                   cur_frm.dialog_context,
                   cur_frm.dialog_data,
                   cur_frm.dialog_header_html,
-                  cur_frm.data_dict
+                  cur_frm.data_dict,
                 );
               });
             });
@@ -200,7 +204,7 @@ frappe.ui.form.on("Notification", {
                   cur_frm.dialog_context,
                   cur_frm.dialog_data,
                   cur_frm.dialog_header_html,
-                  cur_frm.data_dict
+                  cur_frm.data_dict,
                 );
               };
             });
@@ -219,7 +223,7 @@ frappe.ui.form.on("Notification", {
               `<div class="card mb-3 h-100"><div class="card-body">` +
                 header_html +
                 data.message_body +
-                `<br><br></div></div>`
+                `<br><br></div></div>`,
             );
 
             cur_frm.dialog_d = d;
@@ -238,10 +242,13 @@ frappe.ui.form.on("Notification", {
   setup_whatsapp_template: function (frm) {
     let template = "";
     let total_html = "";
-    if (frm.doc.channel === "WhatsApp") {
-      if (frm.doc.whatsapp_template != undefined) {
+    if (
+      frm.doc.channel === "WhatsApp" &&
+      frm.doc.custom_whatsapp_app === APP_TITLE
+    ) {
+      if (frm.doc.wati_whatsapp_template != undefined) {
         frappe.db
-          .get_doc("WhatsApp Template", frm.doc.whatsapp_template)
+          .get_doc("WhatsApp Template", frm.doc.wati_whatsapp_template)
           .then((data) => {
             frm.fields_list = data.whatsapp_map;
             if (
@@ -255,16 +262,18 @@ frappe.ui.form.on("Notification", {
                   let check = false;
                   param_html += `"` + e.field_name + `": "", `;
                   if (cur_frm.is_new() != 1) {
-                    frm.doc.whatsapp_parameter.forEach((f) => {
+                    frm.doc.wati_whatsapp_parameter.forEach((f) => {
                       if (f.parameter == e.field_name) {
                         check = true;
                       }
                     });
                   }
                   if (check == false) {
-                    var childTable = cur_frm.add_child("whatsapp_parameter");
+                    var childTable = cur_frm.add_child(
+                      "wati_whatsapp_parameter",
+                    );
                     childTable.parameter = e.field_name;
-                    cur_frm.refresh_fields("whatsapp_parameter");
+                    cur_frm.refresh_fields("wati_whatsapp_parameter");
                   }
                 });
                 param_html = param_html.slice(0, -2);
@@ -353,7 +362,7 @@ function verify(d, context, data, header_html, data_dict) {
     `<div class="card mb-3 h-100"><div class="card-body">` +
       header_html +
       data.message_body +
-      `<br><br></div></div>`
+      `<br><br></div></div>`,
   );
   d.get_primary_btn()[0].disabled = false;
 }
