@@ -14,7 +14,9 @@ frappe.ui.form.on("Notification", {
   wati_whatsapp_template: function (frm) {
     frm.doc.message = "";
     refresh_field("message");
-    frm.events.setup_whatsapp_template(frm);
+    if (frm.doc.wati_whatsapp_template) {
+      frm.events.setup_whatsapp_template(frm);
+    }
   },
 
   wati_map_fields: function (frm) {
