@@ -1,0 +1,1 @@
+wati.patches.add_app_to_whatsapp_apps
